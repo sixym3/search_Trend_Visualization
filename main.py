@@ -3,10 +3,11 @@ import pandas_datareader.data as dr
 import datetime
 import matplotlib.pyplot as plt
 from pytrends.request import TrendReq
+from pytrends.dailydata import get_daily_data
 
 pd.options.display.float_format = '{:,.1f}'.format
 
-start = datetime.datetime(2015, 12, 1) # start date
+start = datetime.datetime(2020, 12, 1) # start date
 end = datetime.date.today() # end date
 
 def ticker_vs_time(ticker, start, end):
@@ -18,16 +19,22 @@ def ticker_vs_time(ticker, start, end):
     plt.show()
 
 def plot_interest_over_time(ticker, start, end):
-    pytrend = TrendReq()
+    pytrend = get_daily_data("bitcoin", start.year, start.month, end.year, end.month, geo = "US", verbose=True)
+    """
+    pytrend = Trendreq()
     pytrend.build_payload(kw_list=[ticker], # len(kw_list) <= 5
                           timeframe=start.strftime("%Y-%m-%d")+" "+end.strftime("%Y-%m-%d"),
                           geo = 'US')
     interest_over_time_df = pytrend.interest_over_time()
     plt.plot(interest_over_time_df.index, interest_over_time_df[ticker])
+    """
+    print(pytrend)
+    plt.plot(pytrend.index, pytrend["bitcoin"])
     plt.title("Interest Over Time")
     fig = plt.gcf()
     fig.set_size_inches(20, 3)
     plt.show()
+    plt.savefig("Interest_chart")
 
 def interest_and_price_over_time(ticker, start, end):
     fig, ax1 = plt.subplots()
@@ -55,8 +62,9 @@ def interest_and_price_over_time(ticker, start, end):
     plt.savefig("BTC-USD")
 
 #plot_interest_over_time("BTC/USD", start, end)
+plot_interest_over_time("BTC-USD", start, end)
 
-interest_and_price_over_time("BTC-USD", start, end)
+#interest_and_price_over_time("BTC-USD", start, end)
 
 #stocks = ["AAPL", "AMZN", "TSLA", "NVDA", "MSFT", "LULU", "BRK-B"]
 
