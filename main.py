@@ -10,8 +10,9 @@ from pytrends.dailydata import get_daily_data
 
 pd.options.display.float_format = '{:,.1f}'.format
 
-start = datetime.datetime(2016, 1, 1)  # start date
-end = datetime.date.today()  # end date
+start = datetime.datetime(2017, 10, 1)  # start date
+end = datetime.datetime(2018, 1, 1)
+#end = datetime.date.today()  # end date
 csv = "data_10year"
 
 
@@ -86,13 +87,14 @@ def interest_and_price_over_time(ticker, start, end):
     ax2.tick_params(axis='y', labelcolor=color)
     df.index = df.index.astype('datetime64[ns]')
     df = df[df.index > start]
+    df = df[df.index < end]
     plt.plot(df.index, df["bitcoin"])
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
-    plt.savefig("BTC-USD")
+    plt.savefig("BTC-USD_2")
 
 
 # plot_interest_over_time("BTC/USD", start, end)
-update_interest_over_time("bitcoin", start, end)
+# update_interest_over_time("bitcoin", start, end)
 # plot_interest_over_time("BTC-USD", start, end)
 
 interest_and_price_over_time("BTC-USD", start, end)
