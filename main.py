@@ -3,16 +3,14 @@ import os
 import pandas as pd
 import pandas_datareader.data as dr
 import datetime
-import numpy as np
 import matplotlib.pyplot as plt
-from pytrends.request import TrendReq
 from pytrends.dailydata import get_daily_data
 
 pd.options.display.float_format = '{:,.1f}'.format
 
-start = datetime.datetime(2017, 10, 1)  # start date
-end = datetime.datetime(2018, 1, 1)
-#end = datetime.date.today()  # end date
+start = datetime.datetime(2020, 11, 1)  # start date
+end = datetime.datetime.now()
+# end = datetime.date.today()  # end date
 csv = "data_10year"
 
 
@@ -29,43 +27,38 @@ def ticker_vs_time(ticker, start, end):
     fig.set_size_inches(20, 3)
     plt.show()
 
-def update_interest_over_time(ticker, start, end):
+
+def update_csv_data(ticker):
+    start = datetime.date(2010, 1, 1) #datetime.date
+    end = datetime.date.today() #datetime.date
     try:
         pd.read_csv(csv, index_col=0)
     except FileNotFoundError:
         get_daily_data(ticker, start.year, start.month, end.year, end.month, geo="US", verbose=True).to_csv(csv)
     finally:
-        df = pd.read_csv(csv, index_col=0)
+        df = pd.read_csv(csv, index_col=0) #pandas.DataFrame
         last = df.index[len(df) - 1]
-        last = datetime.datetime.strptime(last, '%Y-%m-%d').date()
+        last = datetime.datetime.strptime(last, '%Y-%m-%d').date() #datetime.date
         if last != end:
             get_daily_data(ticker, last.year, last.month, end.year, end.month, geo="US", verbose=True).to_csv("temp")
-            new_df = pd.read_csv("temp", index_col=0)
+            new_df = pd.read_csv("temp", index_col=0) #pandas.DataFrame
             os.remove("temp")
-            df = df.append(new_df)
+            new = last + datetime.timedelta(days=1)
+            new = new.strftime('%Y-%m-%d')
+            if new in new_df.index:
+                df = df.append(new_df.loc[new:])
+            # if next.toString() in
+            #if there is overlap of index from df and new_df, only add the parts of new_df that does not overlap
             df.to_csv(csv)
 
-    # define a different start date for update function
 
-
-def plot_interest_over_time(ticker, start, end):
+def plot_interest_over_time():
     df = pd.read_csv(csv)
-    # print(len(df))
     plt.plot(df.index, df["bitcoin"])
     plt.title("Interest Over Time")
     fig = plt.gcf()
     fig.set_size_inches(20, 3)
     plt.savefig("Interest_chart")
-
-    """
-    
-    pytrend = Trendreq()
-    pytrend.build_payload(kw_list=[ticker], # len(kw_list) <= 5
-                          timeframe=start.strftime("%Y-%m-%d")+" "+end.strftime("%Y-%m-%d"),
-                          geo = 'US')
-    interest_over_time_df = pytrend.interest_over_time()
-    plt.plot(interest_over_time_df.index, interest_over_time_df[ticker])
-    """
 
 
 def interest_and_price_over_time(ticker, start, end):
@@ -80,6 +73,7 @@ def interest_and_price_over_time(ticker, start, end):
     ax1.plot(stock.index, stock["Adj Close"], color=color)
     ax1.tick_params(axis='y', labelcolor=color)
     # plot Google trends index on the twin y axis
+
     df = pd.read_csv(csv, index_col=0)
     color = 'tab:blue'
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-a
@@ -91,17 +85,14 @@ def interest_and_price_over_time(ticker, start, end):
     plt.plot(df.index, df["bitcoin"])
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.savefig("BTC-USD_2")
+    plt.show()
 
 
-# plot_interest_over_time("BTC/USD", start, end)
-# update_interest_over_time("bitcoin", start, end)
-# plot_interest_over_time("BTC-USD", start, end)
-
+# update_csv_data("bitcoin")
+# plot_interest_over_time()
 interest_and_price_over_time("BTC-USD", start, end)
 
 # stocks = ["AAPL", "AMZN", "TSLA", "NVDA", "MSFT", "LULU", "BRK-B"]
-
 # for ticker in stocks:
 #    interest_and_price_over_time(ticker, start, end)
-
 # interest_and_price_over_time("BTC/USD", datetime.datetime(2020, 12, 1), end)
