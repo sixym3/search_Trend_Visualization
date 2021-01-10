@@ -88,7 +88,7 @@ def interest_and_price_over_time(ticker, start, end):
     plt.show()
 
 
-# update_csv_data("bitcoin")
+update_csv_data("bitcoin")
 # plot_interest_over_time()
 interest_and_price_over_time("BTC-USD", start, end)
 
