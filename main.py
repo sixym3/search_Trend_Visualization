@@ -8,7 +8,7 @@ from pytrends.dailydata import get_daily_data
 
 pd.options.display.float_format = '{:,.1f}'.format
 
-start = datetime.datetime(2020, 11, 1)  # start date
+start = datetime.datetime(2020, 12, 1)  # start date
 end = datetime.datetime.now()
 # end = datetime.date.today()  # end date
 csv = "data_10year"
